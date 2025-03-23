@@ -13,6 +13,7 @@ const Dashboard = ({ setToken }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(true);
 
   const API_URL = import.meta.env.VITE_BACKEND_URL;
   console.log(API_URL)
@@ -29,7 +30,8 @@ const Dashboard = ({ setToken }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setUsers(res.data))
-      .catch(() => navigate("/"));
+      .catch(() => navigate("/"))
+      .finally(() => setLoadingUsers(false));
   }, [navigate]);
 
   const handleDelete = async (id) => {
@@ -94,9 +96,15 @@ const Dashboard = ({ setToken }) => {
         </div>
       </div>
 
-      {users.length === 0 && <div className="text-center mt-2">No users to show</div>}
-      {users.length !== 0 && (
-        <div className="overflow-x-auto">
+
+      {loadingUsers ? (
+      <div className="flex justify-center items-center">
+        <Loader2 className="animate-spin w-10 h-10 text-green-500" />
+      </div>
+    ) : users.length === 0 ? (
+      <div className="text-center mt-2">No users to show</div>
+    ) : (
+      <div className="overflow-x-auto">
         <table className="table-auto w-full rounded-md">
           <thead className="bg-green-800 text-center text-white">
             <tr>
@@ -138,8 +146,8 @@ const Dashboard = ({ setToken }) => {
             ))}
           </tbody>
         </table>
-        </div>
-      )}
+      </div>
+    )}
 
       {/* Modal for Updating User */}
       {isModalOpen && selectedUser && (
