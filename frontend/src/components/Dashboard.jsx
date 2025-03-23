@@ -14,6 +14,7 @@ const Dashboard = ({ setToken }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [ deleteLoading , setDeleteLoading ] = useState(false)
 
   const API_URL = import.meta.env.VITE_BACKEND_URL;
   console.log(API_URL)
@@ -35,6 +36,7 @@ const Dashboard = ({ setToken }) => {
   }, [navigate]);
 
   const handleDelete = async (id) => {
+    setDeleteLoading(true);
     await axios.delete(`${API_URL}/api/users/${id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
@@ -42,6 +44,7 @@ const Dashboard = ({ setToken }) => {
     localStorage.removeItem("token");
     setLoggedInUserId(null);
     setToken("");
+    setDeleteLoading(false);
     navigate("/");
   };
 
@@ -91,7 +94,7 @@ const Dashboard = ({ setToken }) => {
           className="absolute right-5 top-1/4 flex gap-2 cursor-pointer"
           onClick={handleLogout}
         >
-          <span className="text-lg font-normal hidden sm:visible">Logout</span>
+          <span className="text-lg font-normal hidden sm:block text-black">Logout</span>
           <img src={logOutImg} alt="logOutLogo" className="w-5 md:w-8"/>
         </div>
       </div>
@@ -123,6 +126,7 @@ const Dashboard = ({ setToken }) => {
                 <td className="p-2 border border-black text-center w-32">
                   {user._id === loggedInUserId ? (
                     <>
+                     <div className="flex justify-center items-center">
                       <span className="mx-2 cursor-pointer" onClick={() => handleUpdateClick(user)}>
                         <lord-icon
                           src="https://cdn.lordicon.com/gwlusjdu.json"
@@ -130,13 +134,18 @@ const Dashboard = ({ setToken }) => {
                           style={{ width: "25px", height: "25px" }}
                         ></lord-icon>
                       </span>
-                      <span className="mx-2 cursor-pointer" onClick={() => handleDelete(user._id)}>
-                        <lord-icon
-                          src="https://cdn.lordicon.com/skkahier.json"
-                          trigger="hover"
-                          style={{ width: "25px", height: "25px" }}
-                        ></lord-icon>
-                      </span>
+                      { deleteLoading ? (  
+                        < Loader2 className="animate-spin w-6 h-6"/>
+                        ) : (
+                          <span className="mx-2 cursor-pointer" onClick={() => handleDelete(user._id)}>
+                            <lord-icon
+                              src="https://cdn.lordicon.com/skkahier.json"
+                              trigger="hover"
+                              style={{ width: "25px", height: "25px" }}
+                            ></lord-icon>
+                          </span>
+                      )}
+                     </div>   
                     </>
                   ) : (
                     <span>-</span>
