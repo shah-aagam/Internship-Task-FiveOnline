@@ -12,6 +12,10 @@ app.use(cors({
     origin: process.env.FRONTEND_URL,
 }));
 
+app.get("/", (req, res) => {
+    res.send("Welcome to the User Authentication API!");
+});
+
 
 app.use("/api", userRoutes);
   
@@ -19,7 +23,6 @@ app.use("/api", userRoutes);
 mongoose.connect(process.env.DATABASE_URL, {
 }).then(() => console.log("MongoDB Connected"))
 .catch((err) => console.error("MongoDB Connection Error:", err));
-
 
 const PORT = 5000;
 app.listen(PORT, () => {
